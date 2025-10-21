@@ -1,0 +1,4 @@
+.webview {
+    -fx-overflow-x: hidden;
+    -fx-overflow-y: hidden;
+}

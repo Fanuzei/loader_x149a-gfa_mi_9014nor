@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minor Client Loader</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Montserrat:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary: #00ffcc;
+            --secondary: #6d28d9;
+            --dark: #0f172a;
+            --darker: #0a0f1c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--darker), #1e1b4b);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1.54rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 1.92rem;
+            position: relative;
+        }
+        
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.15rem;
+            font-weight: 900;
+            margin-bottom: 0.38rem;
+            text-shadow: 0 0 11.54px rgba(0, 255, 204, 0.3);
+            letter-spacing: 0.77px;
+            transition: transform 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .title:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 300;
+            transition: color 0.3s ease;
+        }
+        
+        .subtitle:hover {
+            color: var(--primary);
+        }
+        
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(7.69px);
+            border-radius: 12.31px;
+            padding: 1.54rem;
+            box-shadow: 0 7.69px 23.08px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.15rem;
+            transition: transform 0.23s ease, box-shadow 0.23s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-3.85px);
+            box-shadow: 0 11.54px 26.92px rgba(0, 0, 0, 0.4);
+        }
+        
+        .form-group {
+            margin-bottom: 1.15rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.38rem;
+            font-weight: 500;
+            color: var(--primary);
+            font-size: 0.77rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .form-label:hover {
+            transform: scale(1.1);
+        }
+        
+        .custom-input {
+            width: 100%;
+            padding: 0.69rem 1.2rem;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 7.69px;
+            color: white;
+            font-size: 0.77rem;
+            min-height: 2.3rem;
+            cursor: text;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2.31px rgba(0, 255, 204, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .custom-select {
+            position: relative;
+        }
+        
+        .custom-select-box {
+            width: 100%;
+            padding: 0.69rem 1.2rem;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 7.69px;
+            color: white;
+            font-size: 0.77rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-select-box:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        
+        .custom-select-box:after {
+            content: '';
+            width: 0.77em;
+            height: 0.77em;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ffcc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        
+        .custom-select-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 7.69px;
+            margin-top: 0.38rem;
+            max-height: 7.5rem;
+            overflow-y: auto;
+            z-index: 10;
+            scrollbar-width: none;
+        }
+        
+        .custom-select-options::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .custom-select-options.show {
+            display: block;
+        }
+        
+        .custom-select-option {
+            padding: 0.69rem 1.2rem;
+            color: white;
+            font-size: 0.77rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-select-option:hover {
+            background: rgba(0, 255, 204, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .slider-container {
+            padding: 0.38rem 0;
+        }
+        
+        .custom-slider {
+            width: 100%;
+            height: 6.15px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 7.69px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .custom-slider-track {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #3b82f6);
+            border-radius: 7.69px;
+            transition: width 0.3s ease;
+        }
+        
+        .custom-slider-thumb {
+            position: absolute;
+            top: 50%;
+            width: 16.92px;
+            height: 16.92px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 7.69px rgba(0, 255, 204, 0.7);
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+        
+        .custom-slider-thumb:hover {
+            transform: translateY(-50%) scale(1.2);
+            box-shadow: 0 0 11.54px rgba(0, 255, 204, 0.9);
+        }
+        
+        .slider-value {
+            display: inline-block;
+            margin-top: 0.2rem;
+            padding: 0.23rem 0.8rem;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 15.38px;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.77rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .slider-value:hover {
+            transform: scale(1.1);
+        }
+        
+        .btn-launch {
+            width: 100%;
+            padding: 0.92rem;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border: none;
+            border-radius: 9.23px;
+            color: var(--darker);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3.85px 11.54px rgba(0, 255, 204, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.54rem;
+        }
+        
+        .btn-launch:hover {
+            transform: translateY(-2.31px);
+            box-shadow: 0 6.15px 15.38px rgba(0, 255, 204, 0.6);
+        }
+        
+        .btn-launch:active {
+            transform: translateY(0.77px);
+            box-shadow: 0 3.85px 11.54px rgba(0, 255, 204, 0.4);
+        }
+        
+        .status {
+            text-align: center;
+            margin-top: 1.15rem;
+            padding: 0.77rem;
+            border-radius: 7.69px;
+            background: rgba(0, 255, 204, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            min-height: 46.15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .status.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 11.54px rgba(0, 255, 204, 0.5);
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(0, 255, 204, 0.3);
+            border-radius: 50%;
+            animation: float 11.54s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-76.92vh) translateX(76.92px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(15.38px);
+            animation: fadeIn 0.46s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 1.54s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 11.54px rgba(0, 255, 204, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
+            }
+        }
+        
+        .logo {
+            width: 80px;
+            height: 61.54px;
+            margin: 0 auto 1.15rem;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border-radius: 15.38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.54rem;
+            color: var(--darker);
+            box-shadow: 0 0 15.38px rgba(0, 255, 204, 0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: rotate(5deg) scale(1.1);
+        }
+        
+        .progress-bar {
+            height: 4.62px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 7.69px;
+            margin-top: 0.77rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #3b82f6);
+            border-radius: 7.69px;
+            width: 0%;
+            transition: width 0.38s ease;
+        }
+        
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader-status {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 0.77rem;
+            font-weight: 500;
+            text-shadow: 0 0 7.69px rgba(0, 255, 204, 0.5);
+            animation: pulseText 1s infinite;
+        }
+        
+        @keyframes pulseText {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.15rem;
+            }
+            
+            .title {
+                font-size: 1.69rem;
+            }
+            
+            .card {
+                padding: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+
+<div class="loader-overlay" id="loader">
+    <div class="loader-status" id="loaderStatus">Loading assets...</div>
+    <div class="progress-bar">
+        <div class="progress" id="loaderProgress"></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header fade-in" style="animation-delay: 0.08s">
+        <div class="logo pulse">
+            <i class="fas fa-cube"></i>
+        </div>
+        <h1 class="title">Minor Client</h1>
+        <p class="subtitle">Enhanced Minecraft Experience</p>
+    </div>
+
+    <div class="card fade-in" style="animation-delay: 0.15s">
+        <div class="form-group">
+            <label class="form-label" for="nickname">
+                <i class="fas fa-user"></i> Nickname
+            </label>
+            <div id="nickname" class="custom-input" contenteditable="true" data-placeholder="Enter your Minecraft username"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-code-branch"></i> Minecraft Version
+            </label>
+            <div class="custom-select">
+                <div class="custom-select-box" id="versionSelect">
+                    <span class="selected-option" data-value="1.21.4">1.21.4</span>
+                </div>
+                <div class="custom-select-options" id="versionOptions">
+                    <div class="custom-select-option" data-value="1.21.4">1.21.4</div>
+                    <div class="custom-select-option" data-value="1.16.5">1.16.5</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="ramSlider">
+                <i class="fas fa-memory"></i> RAM Allocation
+            </label>
+            <div class="slider-container">
+                <div class="custom-slider" id="ramSlider">
+                    <div class="custom-slider-track" id="ramTrack" style="width: 25%"></div>
+                    <div class="custom-slider-thumb" id="ramThumb" style="left: 25%"></div>
+                </div>
+            </div>
+            <span id="ramValue" class="slider-value">6 GB</span>
+        </div>
+    </div>
+
+    <button id="launchBtn" class="btn-launch fade-in" style="animation-delay: 0.23s">
+        <i class="fas fa-rocket"></i> Launch Minor Client
+    </button>
+
+    <div class="status fade-in" style="animation-delay: 0.31s" id="status">
+        Ready to launch
+    </div>
+
+    <div class="progress-bar fade-in" style="animation-delay: 0.38s">
+        <div class="progress" id="progress"></div>
+    </div>
+</div>
+
+<script>
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * (6.15 - 2.31) + 2.31;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.top = `${Math.random() * 100}vh`;
+            const delay = Math.random() * 11.54;
+            const duration = Math.random() * 7.69 + 11.54;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    function runLoaderAnimation() {
+        const loader = document.getElementById('loader');
+        const loaderStatus = document.getElementById('loaderStatus');
+        const loaderProgress = document.getElementById('loaderProgress');
+
+        const steps = [
+            { text: 'Loading assets...', progress: 20, duration: 500 },
+            { text: 'VM initialization...', progress: 40, duration: 1000 },
+            { text: 'Files download...', progress: 70, duration: 1500 },
+            { text: 'Loading...', progress: 100, duration: 1000 }
+        ];
+
+        let currentStep = 0;
+
+        function nextStep() {
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                loaderStatus.textContent = step.text;
+                loaderStatus.classList.add('active');
+                loaderProgress.style.width = `${step.progress}%`;
+                setTimeout(() => {
+                    loaderStatus.classList.remove('active');
+                    currentStep++;
+                    if (currentStep < steps.length) {
+                        nextStep();
+                    } else {
+                        loader.classList.add('hidden');
+                    }
+                }, step.duration);
+            }
+        }
+
+        nextStep();
+    }
+
+    const nicknameInput = document.getElementById('nickname');
+    nicknameInput.addEventListener('input', () => {
+        nicknameInput.textContent ? nicknameInput.classList.remove('placeholder') : nicknameInput.classList.add('placeholder');
+        nicknameInput.style.transform = 'scale(1.03)';
+        setTimeout(() => nicknameInput.style.transform = 'scale(1)', 200);
+    });
+    nicknameInput.addEventListener('blur', () => {
+        if (!nicknameInput.textContent) nicknameInput.classList.add('placeholder');
+    });
+
+    const versionSelect = document.getElementById('versionSelect');
+    const versionOptions = document.getElementById('versionOptions');
+    versionSelect.addEventListener('click', () => {
+        versionOptions.classList.toggle('show');
+        versionSelect.style.transform = 'scale(1.03)';
+        setTimeout(() => versionSelect.style.transform = 'scale(1)', 200);
+    });
+    versionOptions.querySelectorAll('.custom-select-option').forEach(option => {
+        option.addEventListener('click', () => {
+            versionSelect.querySelector('.selected-option').textContent = option.textContent;
+            versionSelect.querySelector('.selected-option').dataset.value = option.dataset.value;
+            versionOptions.classList.remove('show');
+            option.style.transform = 'scale(1.05)';
+            setTimeout(() => option.style.transform = 'scale(1)', 200);
+        });
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.custom-select')) versionOptions.classList.remove('show');
+    });
+
+    const ramSlider = document.getElementById('ramSlider');
+    const ramTrack = document.getElementById('ramTrack');
+    const ramThumb = document.getElementById('ramThumb');
+    const ramValue = document.getElementById('ramValue');
+    let isDragging = false;
+
+    function updateSlider(e) {
+        const rect = ramSlider.getBoundingClientRect();
+        const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const value = 2 + pos * (16 - 2);
+        ramTrack.style.width = `${pos * 100}%`;
+        ramThumb.style.left = `${pos * 100}%`;
+        ramValue.textContent = `${Math.round(value)} GB`;
+        ramThumb.style.transform = `translateY(-50%) scale(${isDragging ? 1.3 : 1})`;
+    }
+
+    ramSlider.addEventListener('mousedown', e => {
+        isDragging = true;
+        updateSlider(e);
+    });
+    document.addEventListener('mousemove', e => {
+        if (isDragging) updateSlider(e);
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        ramThumb.style.transform = 'translateY(-50%) scale(1)';
+    });
+    ramSlider.addEventListener('click', e => updateSlider(e));
+
+    document.getElementById('launchBtn').addEventListener('click', () => {
+        const nickname = nicknameInput.textContent || 'Player';
+        const version = versionSelect.querySelector('.selected-option').dataset.value;
+        const ram = Math.round(2 + (parseFloat(ramThumb.style.left || 25) / 100) * (16 - 2));
+        const status = document.getElementById('status');
+        const progressBar = document.getElementById('progress');
+        const launchBtn = document.getElementById('launchBtn');
+
+        launchBtn.disabled = true;
+        launchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Launching...';
+        launchBtn.style.transform = 'scale(1.05)';
+        setTimeout(() => launchBtn.style.transform = 'scale(1)', 200);
+
+        progressBar.style.width = '0%';
+
+        const steps = [
+            { text: 'Initializing...', progress: 10 },
+            { text: 'Loading assets...', progress: 25 },
+            { text: 'Checking dependencies...', progress: 45 },
+            { text: 'Allocating RAM...', progress: 65 },
+            { text: 'Starting Minecraft...', progress: 85 },
+            { text: 'Launching Minor Client...', progress: 100 }
+        ];
+
+        let currentStep = 0;
+
+        function nextStep() {
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                status.textContent = step.text;
+                status.classList.add('active');
+                progressBar.style.width = `${step.progress}%`;
+                currentStep++;
+                setTimeout(() => {
+                    status.classList.remove('active');
+                    nextStep();
+                }, 461.54);
+            } else {
+                status.innerHTML = `<i class="fas fa-check-circle"></i> Minor Client launched for ${nickname}<br>Version: ${version} | RAM: ${ram}GB`;
+                status.classList.add('active');
+                launchBtn.disabled = false;
+                launchBtn.innerHTML = '<i class="fas fa-rocket"></i> Launch Again';
+                status.style.background = 'rgba(34, 197, 94, 0.2)';
+                status.style.color = '#22c55e';
+                setTimeout(() => {
+                    status.classList.remove('active');
+                    // Call Java method to close the application
+                    if (window.javaApp && typeof window.javaApp.closeApplication === 'function') {
+                        window.javaApp.closeApplication();
+                    }
+                }, 500);
+            }
+        }
+
+        nextStep();
+    });
+
+    window.addEventListener('load', () => {
+        createParticles();
+        runLoaderAnimation();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.fade-in').forEach((el, index) => {
+            el.style.animationDelay = `${0.08 + index * 0.08}s`;
+        });
+    });
+</script>
+</body>
+</html>

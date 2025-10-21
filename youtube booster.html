@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Fast Access</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+        
+        :root {
+            --primary: #00ffcc;
+            --dark: #0f172a;
+            --darker: #0a0f1c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, var(--darker), #1e1b4b);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(0, 255, 204, 0.3);
+            border-radius: 50%;
+            animation: float 12s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80vh) translateX(80px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(0, 255, 204, 0.5);
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .youtube-container {
+            width: 800px;
+            height: 450px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 255, 204, 0.4);
+            animation: fadeIn 0.5s ease forwards 0.2s;
+        }
+        
+        .youtube-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .note {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease forwards 0.4s;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 850px) {
+            .youtube-container {
+                width: 90%;
+                height: 300px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <h1 class="title">YouTube Fast Access</h1>
+    <div class="youtube-container">
+        <iframe class="youtube-iframe" src="https://www.youtube.com" title="YouTube"></iframe>
+    </div>
+    <p class="note">Ensure Cloudflare WARP (1.1.1.1) is active on your device to bypass throttling.</p>
+
+    <script>
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * (6 - 2) + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                const delay = Math.random() * 12;
+                const duration = Math.random() * 8 + 12;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>

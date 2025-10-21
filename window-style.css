@@ -1,0 +1,11 @@
+VBox {
+    -fx-background-color: #1a1a1a;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+}
+
+WebView {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
